@@ -5,7 +5,7 @@ import nl.han.ica.datastructures.IHANStack;
 public class HANStack implements IHANStack {
     @Override
     public void push(Object value) {
-        
+
     }
 
     @Override
