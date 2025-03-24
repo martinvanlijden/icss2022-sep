@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\test",
+    "\\src\\test\\java",
+    "\\src\\test\\java\\nl",
+    "\\src\\test\\java\\nl\\han",
+    "\\src\\test\\java\\nl\\han\\ica",
+    "\\src\\test\\java\\nl\\han\\ica\\icss",
+    "\\src\\test\\java\\nl\\han\\ica\\icss\\parser",
+    "\\target"
+  ],
+  "SelectedNode": "\\src\\test\\java\\nl\\han\\ica\\icss\\parser\\Fixtures.java",
+  "PreviewInSolutionExplorer": false
+}
