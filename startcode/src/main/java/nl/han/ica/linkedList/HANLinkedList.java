@@ -2,7 +2,7 @@ package nl.han.ica.linkedList;
 
 import nl.han.ica.datastructures.IHANLinkedList;
 
-public class linkedList implements IHANLinkedList {
+public class HANLinkedList implements IHANLinkedList {
     @Override
     public void addFirst(Object value) {
 
