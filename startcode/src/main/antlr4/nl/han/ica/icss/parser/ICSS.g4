@@ -47,12 +47,33 @@
 
     variableAssignment: CAPITAL_IDENT ASSIGNMENT_OPERATOR value SEMICOLON;
 
-    styleRule:selector OPEN_BRACE declaration+ CLOSE_BRACE;
+    styleRule: selector OPEN_BRACE (declaration | conditionalBlock)+ CLOSE_BRACE;
 
     selector: ID_IDENT | CLASS_IDENT | LOWER_IDENT;  // Selectors: #id, .class, tag
 
     declaration: property COLON value SEMICOLON;  // property: value;
 
-    property: 'background-color' | 'width' | 'color';  // Allowed properties in Level 0
+    property: 'background-color' | 'width' | 'color' | 'height';
 
-    value: COLOR | PIXELSIZE | PERCENTAGE | SCALAR | TRUE | FALSE | CAPITAL_IDENT;
+    value: COLOR
+         | PIXELSIZE
+         | PERCENTAGE
+         | SCALAR
+         | TRUE
+         | FALSE
+         | CAPITAL_IDENT
+         | arithmeticExpression // Allows arithmetic expressions as values
+         ;
+
+    primaryExpression: COLOR
+                     | PIXELSIZE
+                     | PERCENTAGE
+                     | SCALAR
+                     | CAPITAL_IDENT;
+
+    arithmeticExpression: primaryExpression ((PLUS | MIN | MUL) primaryExpression)*;
+
+    conditionalBlock: IF BOX_BRACKET_OPEN CAPITAL_IDENT BOX_BRACKET_CLOSE OPEN_BRACE (declaration | conditionalBlock)+ CLOSE_BRACE (ELSE OPEN_BRACE (declaration | conditionalBlock)+ CLOSE_BRACE)?;
+
+
+
