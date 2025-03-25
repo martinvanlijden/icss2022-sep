@@ -2,6 +2,8 @@ package nl.han.ica.linkedList;
 
 import nl.han.ica.datastructures.IHANLinkedList;
 
+import java.util.NoSuchElementException;
+
 public class HANLinkedList<T> implements IHANLinkedList {
         Node<T> head;
         private int size;
@@ -70,22 +72,29 @@ public class HANLinkedList<T> implements IHANLinkedList {
         for (int i = 0; i < pos; i++) {
             current = current.next;
         }
-        return current.value;
+        return current.data;
     }
 
     @Override
     public void removeFirst() {
-
+        if (head == null) {
+            return;
+        }
+        head=head.next;
+        size--;
     }
 
     @Override
     public Object getFirst() {
-        return null;
+            if (head== null){
+                throw new NoSuchElementException("this list is empty");
+            }
+        return head.data;
     }
 
     @Override
     public int getSize() {
-        return 0;
+        return size;
     }
 
     private void checkPos(int pos, boolean pos1, String Position_out_of_bounds) {
