@@ -48,7 +48,7 @@ public class ASTListener extends nl.han.ica.icss.parser.ICSSBaseListener {
 	@Override
 	public void enterDeclaration(nl.han.ica.icss.parser.ICSSParser.DeclarationContext ctx) {
 		Declaration declaration = new Declaration();
-		declaration.property = new PropertyName(ctx.getText());
+		declaration.property = new PropertyName(ctx.property().getText());
 		if (ctx.value().COLOR() != null) {
 			declaration.expression = new ColorLiteral(ctx.value().COLOR().getText());
 		} else if (ctx.value().PIXELSIZE() != null) {
