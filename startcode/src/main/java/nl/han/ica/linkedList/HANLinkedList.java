@@ -96,12 +96,11 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
         return size;
     }
 
-
+    @Override
     public Iterator<T> iterator() {
         return new LinkedListIterator();
     }
 
-    // Inner iterator class for traversing the linked list
     private class LinkedListIterator implements Iterator<T> {
         private Node<T> current = header.next;
 

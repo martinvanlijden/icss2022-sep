@@ -70,7 +70,7 @@
 
     types: literalValue | variableReference;
 
-    ifClause:IF BOX_BRACKET_OPEN ifExpression BOX_BRACKET_CLOSE OPEN_BRACE styleOption* CLOSE_BRACE elseClause;
+    ifClause: IF BOX_BRACKET_OPEN ifExpression BOX_BRACKET_CLOSE OPEN_BRACE styleOption* CLOSE_BRACE elseClause?;
 
     elseClause: ELSE OPEN_BRACE styleOption CLOSE_BRACE;
 
