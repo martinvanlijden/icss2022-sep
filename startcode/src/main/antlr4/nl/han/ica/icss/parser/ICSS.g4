@@ -43,37 +43,39 @@
 
 
     //--- PARSER: ---
-    stylesheet: variableAssignment* styleRule+ EOF;
+    stylesheet: (styleRule | variableAssignment)*;
 
-    variableAssignment: CAPITAL_IDENT ASSIGNMENT_OPERATOR value SEMICOLON;
+    styleRule: tagselector OPEN_BRACE styleOption* CLOSE_BRACE;
 
-    styleRule: selector OPEN_BRACE (declaration | conditionalBlock)+ CLOSE_BRACE;
+    tagselector: ID_IDENT | CLASS_IDENT | LOWER_IDENT;
 
-    selector: ID_IDENT | CLASS_IDENT | LOWER_IDENT;  // Selectors: #id, .class, tag
+    declaration: property COLON propertyValue SEMICOLON;
 
-    declaration: property COLON value SEMICOLON;  // property: value;
+    styleOption: declaration | variableAssignment | ifClause;
+
+    propertyValue: literalValue | variableReference | expression;
 
     property: 'background-color' | 'width' | 'color' | 'height';
 
-    value: COLOR
-         | PIXELSIZE
-         | PERCENTAGE
-         | SCALAR
-         | TRUE
-         | FALSE
-         | CAPITAL_IDENT
-         | arithmeticExpression // Allows arithmetic expressions as values
-         ;
+    variableAssignment: variableReference ASSIGNMENT_OPERATOR propertyValue SEMICOLON;
 
-    primaryExpression: COLOR
-                     | PIXELSIZE
-                     | PERCENTAGE
-                     | SCALAR
-                     | CAPITAL_IDENT;
+    variableReference: CAPITAL_IDENT;
 
-    arithmeticExpression: primaryExpression ((PLUS | MIN | MUL) primaryExpression)*;
+    literalValue: TRUE | FALSE | PIXELSIZE | COLOR | PERCENTAGE| SCALAR;
 
-    conditionalBlock: IF BOX_BRACKET_OPEN CAPITAL_IDENT BOX_BRACKET_CLOSE OPEN_BRACE (declaration | conditionalBlock)+ CLOSE_BRACE (ELSE OPEN_BRACE (declaration | conditionalBlock)+ CLOSE_BRACE)?;
+    expression :
+        expression MUL expression |
+        expression (PLUS | MIN) expression |
+        types ;
 
+    types: literalValue | variableReference;
+
+    ifClause:IF BOX_BRACKET_OPEN ifExpression BOX_BRACKET_CLOSE OPEN_BRACE styleOption* CLOSE_BRACE elseClause;
+
+    elseClause: ELSE OPEN_BRACE styleOption CLOSE_BRACE;
+
+    ifExpression: variableReference | booleanValue;
+
+    booleanValue: TRUE | FALSE;
 
 

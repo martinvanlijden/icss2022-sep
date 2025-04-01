@@ -1,95 +1,94 @@
 package nl.han.ica.linkedList;
 
+
 import nl.han.ica.datastructures.IHANLinkedList;
 
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class HANLinkedList<T> implements IHANLinkedList {
-        Node<T> head;
-        private int size;
-        public HANLinkedList(){
-            head = null;
-            size= 0;
+public class HANLinkedList<T> implements IHANLinkedList<T> {
+    // Header node (does not hold actual data)
+    private Node<T> header;
+    private int size;
+
+    public HANLinkedList() {
+        this.header = new Node<>(null, null);  // Header node
+        this.size = 0;
     }
 
     @Override
-    public void addFirst(Object value) {
-        Node<T> newNode = new Node<T>((T) value);
-        newNode.next = head;
-        head = newNode;
+    public void addFirst(T value) {
+        Node<T> newNode = new Node<>(value, header.next);
+        header.next = newNode;
         size++;
     }
 
     @Override
     public void clear() {
-        head = null;
+        header.next = null;
         size = 0;
     }
 
     @Override
-    public void insert(int index, Object value) {
-        checkPos(index, index > size, "Index out of bounds");
-        if(index == 0) {
-            addFirst(value);
-            return;
+    public void insert(int index, T value) {
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("Index out of bounds");
         }
 
-        Node<T> current = head;
+        Node<T> current = header;
         for (int i = 0; i < index; i++) {
             current = current.next;
         }
 
-        Node<T> newNode = new Node<T>((T) value);
-        newNode.next = current.next;
+        Node<T> newNode = new Node<>(value, current.next);
         current.next = newNode;
-
         size++;
     }
 
     @Override
     public void delete(int pos) {
-        checkPos(pos, pos >= size, "Position out of bounds");
-        if (pos == 0) {
-            removeFirst();
-            size--;
+        if (pos < 0 || pos >= size) {
+            throw new IndexOutOfBoundsException("Index out of bounds");
         }
-        Node<T> current = head;
-        for (int i = 0; i < pos - 1; i++) {
+
+        Node<T> current = header;
+        for (int i = 0; i < pos; i++) {
             current = current.next;
         }
-        Node<T> nodeToDelete = current.next;
-        current.next = nodeToDelete.next;
 
+        current.next = current.next.next;
         size--;
     }
 
     @Override
-    public Object get(int pos) {
-        checkPos(pos, pos >= size, "Position out of bounds");
+    public T get(int pos) {
+        if (pos < 0 || pos >= size) {
+            throw new IndexOutOfBoundsException("Index out of bounds");
+        }
 
-        Node<T> current = head;
-
+        Node<T> current = header.next;
         for (int i = 0; i < pos; i++) {
             current = current.next;
         }
+
         return current.data;
     }
 
     @Override
     public void removeFirst() {
-        if (head == null) {
-            return;
+        if (size == 0) {
+            throw new NoSuchElementException("List is empty");
         }
-        head=head.next;
+        header.next = header.next.next;
         size--;
     }
 
     @Override
-    public Object getFirst() {
-            if (head== null){
-                throw new NoSuchElementException("this list is empty");
-            }
-        return head.data;
+    public T getFirst() {
+        if (size == 0) {
+            throw new NoSuchElementException("List is empty");
+        }
+        return header.next.data;
     }
 
     @Override
@@ -97,9 +96,29 @@ public class HANLinkedList<T> implements IHANLinkedList {
         return size;
     }
 
-    private void checkPos(int pos, boolean pos1, String Position_out_of_bounds) {
-        if (pos < 0 || pos1) {
-            throw new IndexOutOfBoundsException(Position_out_of_bounds);
+
+    public Iterator<T> iterator() {
+        return new LinkedListIterator();
+    }
+
+    // Inner iterator class for traversing the linked list
+    private class LinkedListIterator implements Iterator<T> {
+        private Node<T> current = header.next;
+
+        @Override
+        public boolean hasNext() {
+            return current != null;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+
+            T value = current.data;
+            current = current.next;
+            return value;
         }
     }
 }

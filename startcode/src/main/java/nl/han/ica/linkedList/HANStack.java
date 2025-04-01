@@ -2,45 +2,41 @@ package nl.han.ica.linkedList;
 
 import nl.han.ica.datastructures.IHANStack;
 
-import java.util.NoSuchElementException;
-
-public class HANStack<T> implements IHANStack {
-    private Node<T> top;
-    private int size;
+public class HANStack<T> implements IHANStack<T> {
+    public HANLinkedList<T> list;
 
     public HANStack() {
-        this.top = null;
-        this.size = 0;
+        list = new HANLinkedList<>();
     }
+
     @Override
-    public void push(Object value) {
-        Node<T> newNode = new Node<>((T) value);
-        newNode.next = top;
-        top = newNode;
-        size++;
+    public void push(T value) {
+        list.addFirst(value);  // Push is equivalent to adding at the front of the list
     }
 
     @Override
     public T pop() {
-        if (top == null) {
-            throw new NoSuchElementException("Stack is empty");
+        if (list.getSize() == 0) {
+            throw new IllegalStateException("Stack is empty");
         }
-        T value = top.data;
-        size--;
+        T value = list.getFirst();
+        list.removeFirst();
         return value;
     }
 
     @Override
-    public Object peek() {
-        if (top == null) {
-            throw new NoSuchElementException("Stack is empty");
+    public T peek() {
+        if (list.getSize() == 0) {
+            throw new IllegalStateException("Stack is empty");
         }
-        return top.data;
+        return list.getFirst();  // Peek at the top of the stack (first element in list)
     }
+
     public int getSize() {
-        return size;
+        return list.getSize();  // Optional helper method to get the size of the stack
     }
+
     public boolean isEmpty() {
-        return size == 0;
+        return list.getSize() == 0;  // Optional helper method to check if the stack is empty
     }
 }
