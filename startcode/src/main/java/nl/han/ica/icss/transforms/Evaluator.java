@@ -10,7 +10,6 @@ import nl.han.ica.icss.ast.operations.AddOperation;
 import nl.han.ica.icss.ast.operations.MultiplyOperation;
 import nl.han.ica.icss.ast.operations.SubtractOperation;
 import nl.han.ica.linkedList.HANLinkedList;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +40,6 @@ public class Evaluator implements Transform {
                 setStyleRuleVar((Stylerule) nodWithinStylesheets);
             }
         }
-
         for (ASTNode removalNode : removalnodes) {
             root.removeChild(removalNode);
         }
@@ -59,9 +57,7 @@ public class Evaluator implements Transform {
                 newBody.add(node);
             } else if (node instanceof IfClause) {
                 newBody.addAll(setIfClause(node));
-            } else {
-                newBody.add(node);
-            }
+            } else { newBody.add(node);}
         }
     }
 
@@ -184,6 +180,4 @@ public class Evaluator implements Transform {
         Literal literal = getExpressionResult(variableAssignment.expression);
         variableValues.getFirst().put(variableAssignment.name.name, literal);
     }
-
-
 }

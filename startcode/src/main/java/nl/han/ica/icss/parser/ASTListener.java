@@ -58,7 +58,6 @@ public class ASTListener extends nl.han.ica.icss.parser.ICSSBaseListener {
 		}else{
 			selector = new TagSelector(ctx.getText());
 		}
-
 		currentContainer.push(selector);
 	}
 	@Override public void exitTagselector(nl.han.ica.icss.parser.ICSSParser.TagselectorContext ctx) {
@@ -88,7 +87,6 @@ public class ASTListener extends nl.han.ica.icss.parser.ICSSBaseListener {
 			literal = new ScalarLiteral(ctx.getText());
 		}
 		currentContainer.peek().addChild(literal);
-
 	}
 	@Override public void enterProperty(nl.han.ica.icss.parser.ICSSParser.PropertyContext ctx) {
 		PropertyName propertyName = new PropertyName(ctx.getText());
@@ -138,7 +136,6 @@ public class ASTListener extends nl.han.ica.icss.parser.ICSSBaseListener {
 	@Override public void enterIfClause(nl.han.ica.icss.parser.ICSSParser.IfClauseContext ctx) {
 		IfClause ifClause = new IfClause();
 		currentContainer.push(ifClause);
-
 	}
 
 	@Override public void exitIfClause(nl.han.ica.icss.parser.ICSSParser.IfClauseContext ctx) {
