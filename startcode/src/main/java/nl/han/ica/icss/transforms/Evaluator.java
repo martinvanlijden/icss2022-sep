@@ -27,62 +27,62 @@ public class Evaluator implements Transform {
         setStylesheet(ast.root);
     }
 
-    private void setStylesheet(Stylesheet stylesheet) {
+    private void setStylesheet(Stylesheet node) {
         variableValues.addFirst(new HashMap<>());
-        List<ASTNode> removeNodes = new ArrayList<>();
+        List<ASTNode> removalNodes = new ArrayList<>();
 
-        for (ASTNode nodeInStylesheet : stylesheet.getChildren()) {
-            if (nodeInStylesheet instanceof VariableAssignment) {
-                setVariableValue(nodeInStylesheet);
-                removeNodes.add(nodeInStylesheet);
+        for (ASTNode astNode : node.getChildren()) {
+            if (astNode instanceof VariableAssignment) {
+                setVariableValue(astNode);
+                removalNodes.add(astNode);
             }
-            if (nodeInStylesheet instanceof Stylerule) {
-                setStyleruleValue((Stylerule) nodeInStylesheet);
+            if (astNode instanceof Stylerule) {
+                setStyleruleValue((Stylerule) astNode);
             }
         }
 
-        for (ASTNode removeNode : removeNodes) {
-            stylesheet.removeChild(removeNode);
+        for (ASTNode removeNode : removalNodes) {
+            node.removeChild(removeNode);
         }
 
         variableValues.removeFirst();
     }
 
-    private void setStyleruleValue(Stylerule stylerule) {
+    private void setStyleruleValue(Stylerule node) {
         variableValues.addFirst(new HashMap<>());
 
         ArrayList<ASTNode> newBody = new ArrayList<>();
 
-        for (ASTNode node : stylerule.body) {
-            if (node instanceof VariableAssignment) {
-                setVariableValue(node);
-            } else if (node instanceof Declaration) {
-                setDeclarationValue(node);
-                newBody.add(node);
-            } else if (node instanceof IfClause) {
-                newBody.addAll(setIfClause(node));
+        for (ASTNode astNode : node.body) {
+            if (astNode instanceof VariableAssignment) {
+                setVariableValue(astNode);
+            } else if (astNode instanceof Declaration) {
+                setDeclarationValue(astNode);
+                newBody.add(astNode);
+            } else if (astNode instanceof IfClause) {
+                newBody.addAll(setIfClause(astNode));
             } else {
-                newBody.add(node);
+                newBody.add(astNode);
             }
         }
 
-        stylerule.body = newBody;
+        node.body = newBody;
         variableValues.removeFirst();
     }
 
-    private void setDeclarationValue(ASTNode nodeInStylerule) {
-        Declaration declaration = (Declaration) nodeInStylerule;
-        declaration.expression = getResultFromExpression(declaration.expression);
+    private void setDeclarationValue(ASTNode node) {
+        Declaration declaration = (Declaration) node;
+        declaration.expression = getResultExpression(declaration.expression);
     }
 
-    private void setVariableValue(ASTNode nodeInStylesheet) {
-        VariableAssignment variableAssignment = (VariableAssignment) nodeInStylesheet;
-        Literal variableValue = getResultFromExpression(variableAssignment.expression);
+    private void setVariableValue(ASTNode node) {
+        VariableAssignment variableAssignment = (VariableAssignment) node;
+        Literal variableValue = getResultExpression(variableAssignment.expression);
         variableValues.getFirst().put(variableAssignment.name.name, variableValue);
     }
 
-    private List<ASTNode> setIfClause(ASTNode nodeInStylesheet) {
-        IfClause ifClause = (IfClause) nodeInStylesheet;
+    private List<ASTNode> setIfClause(ASTNode node) {
+        IfClause ifClause = (IfClause) node;
         boolean condition = evaluateCondition(ifClause.conditionalExpression);
         List<ASTNode> resultNodes = new ArrayList<>();
 
@@ -101,72 +101,72 @@ public class Evaluator implements Transform {
         return resultNodes;
     }
 
-    private boolean evaluateCondition(Expression conditionalExpression) {
-        Literal result = getResultFromExpression(conditionalExpression);
+    private boolean evaluateCondition(Expression expression) {
+        Literal result = getResultExpression(expression);
         return result instanceof BoolLiteral && ((BoolLiteral) result).value;
     }
 
-    private Literal getResultFromExpression(Expression expression){
+    private Literal getResultExpression(Expression expression){
         if (expression instanceof Literal) {
             return (Literal) expression;
         } else if (expression instanceof MultiplyOperation) {
-            return getValueFromMultiplyOperation((MultiplyOperation) expression);
+            return getValueMultiplyOperation((MultiplyOperation) expression);
         } else if (expression instanceof AddOperation) {
-            return getValueFromAddOperation((AddOperation) expression);
+            return getValueAddOperation((AddOperation) expression);
         } else if (expression instanceof SubtractOperation) {
-            return getValueFromSubtractOperation((SubtractOperation) expression);
+            return getValueSubtractOperation((SubtractOperation) expression);
         } else if (expression instanceof VariableReference) {
-            return getVariableValueFromVariableReference((VariableReference) expression);
+            return getVariableValueVariableReference((VariableReference) expression);
         }
         return null;
     }
 
-    private Literal getValueFromMultiplyOperation(MultiplyOperation multiplyOperation) {
-        Literal left = getResultFromExpression(multiplyOperation.lhs);
-        Literal right = getResultFromExpression(multiplyOperation.rhs);
+    private Literal getValueMultiplyOperation(MultiplyOperation operation) {
+        Literal left = getResultExpression(operation.lhs);
+        Literal right = getResultExpression(operation.rhs);
 
         if (left instanceof ScalarLiteral && right instanceof ScalarLiteral) {
-            return new ScalarLiteral(getValueFromLiteral(left) * getValueFromLiteral(right));
+            return new ScalarLiteral(getValueLiteral(left) * getValueLiteral(right));
         }else if (left instanceof ScalarLiteral && right instanceof PixelLiteral) {
-            return new PixelLiteral(getValueFromLiteral(left) * getValueFromLiteral(right));
+            return new PixelLiteral(getValueLiteral(left) * getValueLiteral(right));
         } else if (left instanceof ScalarLiteral && right instanceof PercentageLiteral) {
-            return new PercentageLiteral(getValueFromLiteral(left) * getValueFromLiteral(right));
+            return new PercentageLiteral(getValueLiteral(left) * getValueLiteral(right));
         } else if (left instanceof PixelLiteral && right instanceof ScalarLiteral) {
-            return new PixelLiteral(getValueFromLiteral(left) * getValueFromLiteral(right));
+            return new PixelLiteral(getValueLiteral(left) * getValueLiteral(right));
         } else if (left instanceof PercentageLiteral && right instanceof ScalarLiteral) {
-            return new PercentageLiteral(getValueFromLiteral(left) * getValueFromLiteral(right));
+            return new PercentageLiteral(getValueLiteral(left) * getValueLiteral(right));
         }
 
         return null;
     }
 
-    private Literal getValueFromAddOperation(AddOperation operation) {
-        Literal left = getResultFromExpression(operation.lhs);
-        Literal right = getResultFromExpression(operation.rhs);
+    private Literal getValueAddOperation(AddOperation operation) {
+        Literal left = getResultExpression(operation.lhs);
+        Literal right = getResultExpression(operation.rhs);
         if (left instanceof PixelLiteral && right instanceof PixelLiteral) {
-            return new PixelLiteral(getValueFromLiteral(left) + getValueFromLiteral(right));
+            return new PixelLiteral(getValueLiteral(left) + getValueLiteral(right));
         } else if (left instanceof PercentageLiteral && right instanceof PercentageLiteral) {
-            return new PercentageLiteral(getValueFromLiteral(left) + getValueFromLiteral(right));
+            return new PercentageLiteral(getValueLiteral(left) + getValueLiteral(right));
         }else if (left instanceof ScalarLiteral && right instanceof ScalarLiteral){
-            return new ScalarLiteral(getValueFromLiteral(left) + getValueFromLiteral(right));
+            return new ScalarLiteral(getValueLiteral(left) + getValueLiteral(right));
         }
         return null;
     }
 
-    private Literal getValueFromSubtractOperation(SubtractOperation operation) {
-        Literal left = getResultFromExpression(operation.lhs);
-        Literal right = getResultFromExpression(operation.rhs);
+    private Literal getValueSubtractOperation(SubtractOperation operation) {
+        Literal left = getResultExpression(operation.lhs);
+        Literal right = getResultExpression(operation.rhs);
         if (left instanceof PixelLiteral && right instanceof PixelLiteral) {
-            return new PixelLiteral(getValueFromLiteral(left) - getValueFromLiteral(right));
+            return new PixelLiteral(getValueLiteral(left) - getValueLiteral(right));
         } else if (left instanceof PercentageLiteral && right instanceof PercentageLiteral) {
-            return new PercentageLiteral(getValueFromLiteral(left) - getValueFromLiteral(right));
+            return new PercentageLiteral(getValueLiteral(left) - getValueLiteral(right));
         }else if (left instanceof ScalarLiteral && right instanceof ScalarLiteral){
-            return new ScalarLiteral(getValueFromLiteral(left) - getValueFromLiteral(right));
+            return new ScalarLiteral(getValueLiteral(left) - getValueLiteral(right));
         }
         return null;
     }
 
-    private int getValueFromLiteral(Literal literal) {
+    private int getValueLiteral(Literal literal) {
         if (literal instanceof PixelLiteral) {
             return ((PixelLiteral) literal).value;
         } else if (literal instanceof PercentageLiteral) {
@@ -177,7 +177,7 @@ public class Evaluator implements Transform {
         return 0;
     }
 
-    private Literal getVariableValueFromVariableReference(VariableReference variableReference) {
+    private Literal getVariableValueVariableReference(VariableReference variableReference) {
         for (HashMap<String, Literal> variable : variableValues) {
             if (variable.containsKey(variableReference.name)) {
                 return variable.get(variableReference.name);
