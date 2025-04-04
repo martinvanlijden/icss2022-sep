@@ -18,11 +18,8 @@ import nl.han.ica.linkedList.HANStack;
  * This class extracts the ICSS Abstract Syntax Tree from the Antlr Parse tree.
  */
 public class ASTListener extends nl.han.ica.icss.parser.ICSSBaseListener {
-	
-	//Accumulator attributes:
 	private AST ast;
 
-	//Use this to keep track of the parent nodes when recursively traversing the ast
 	private HANStack<ASTNode> currentContainer;
 
 	public ASTListener() {
